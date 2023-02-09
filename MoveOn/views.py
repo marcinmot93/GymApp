@@ -13,21 +13,25 @@ class Index(View):
 
     def get(self, request):
 
-        if request.user.is_authenticated:
-            if hasattr(request.user, 'trainer'):
-                trainer = get_object_or_404(Trainer, id=request.user.trainer.id)
-                return render(request, 'main_trainer.html', {'trainer': trainer})
-            else:
-                pupil = get_object_or_404(ThePupil, id=request.user.thepupil.id)
-                return render(request, 'main_pupil.html', {'pupil': pupil})
-        else:
+        if not request.user.is_authenticated:
             return render(request, 'main.html')
+
+        if hasattr(request.user, 'trainer'):
+            trainer = get_object_or_404(Trainer, id=request.user.trainer.id)
+            return render(request, 'main_trainer.html', {'trainer': trainer})
+        elif hasattr(request.user, 'thepupil'):
+            pupil = get_object_or_404(ThePupil, id=request.user.thepupil.id)
+            return render(request, 'main_pupil.html', {'pupil': pupil})
+        else:
+            return redirect(f'creating_details/{request.user.id}/')
 
 
 class LoginView(View):
 
     def get(self, request):
 
+        if request.user.is_authenticated:
+            return redirect('/')
         form = LoginForm()
 
         return render(request, 'login.html', {'form': form})
@@ -53,9 +57,11 @@ class LoginView(View):
                 if hasattr(user, 'thepupil'):
                     pupil = user.thepupil.id
                     return redirect(f'/main/{pupil}/')
-                else:
+                elif hasattr(user, 'trainer'):
                     trainer = user.trainer.id
                     return redirect(f'/main/trainer/{trainer}/')
+                else:
+                    return redirect(f'/creating_details/{user.id}/')
             else:
                 messages.error(request, 'Wrong password')
                 return redirect('/login/')
@@ -114,6 +120,10 @@ class PupilDetailsView(View):
 
     def get(self, request, user_id):
 
+        if not request.user.is_authenticated:
+            return redirect('/')
+        if hasattr(request.user, 'thepupil') or hasattr(request.user, 'trainer'):
+            return redirect('/')
         user = User.objects.get(id=user_id)
         trainers = Trainer.objects.all()
 
@@ -365,8 +375,14 @@ class DeleteFromExercisePlan(View):
 
     def get(self, request, plan_exercise_id, pupil_id):
 
+        if not request.user.is_authenticated:
+            return redirect('/')
+        if not hasattr(request.user, 'trainer'):
+            return redirect('/')
         pupil = get_object_or_404(ThePupil, id=pupil_id)
         trainer_id = pupil.trainer.id
+        if not request.user.trainer.id == trainer_id:
+            return redirect('/')
         plan = pupil.trainingplan_set.get(status=1).id
         plan_exercise = get_object_or_404(PlanExercises, id=plan_exercise_id)
         plan_exercise.delete()
@@ -378,6 +394,12 @@ class ExercisesView(View):
 
     def get(self, request, trainer_id):
 
+        if not request.user.is_authenticated:
+            return redirect('/')
+        if not hasattr(request.user, 'trainer'):
+            return redirect('/')
+        if not request.user.trainer.id == trainer_id:
+            return redirect('/')
         form = AddExerciseForm()
         trainer = get_object_or_404(Trainer, id=trainer_id)
         exercises = trainer.exercise_set.all()
