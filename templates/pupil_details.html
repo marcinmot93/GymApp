@@ -3,7 +3,7 @@
 <form method="post"> {% csrf_token %}
    <p>Name: <input type="text" name="name" value="{{ user.first_name}}"></p>
    <p>Last name: <input type="text" name="last_name" value="{{ user.last_name }}"></p>
-   <p>Your actual weight: <input type="text" name="starting_weight"> kg</p>
+    <p>Your actual weight: <input type="text" name="starting_weight"> kg</p>
     <p>Your height: <input type="number" name="height"> cm</p>
     <p>Choose your trainer: <select name="trainer">
         {% for trainer in trainers %} >
