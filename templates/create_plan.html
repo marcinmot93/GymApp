@@ -1,0 +1,8 @@
+{{ trainer.first_name }}, create new training plan for {{ pupil.first_name }} {{ pupil.last_name }}: waga {{ pupil.starting_weight }} kg,
+wzrost {{ pupil.height }} cm
+{% include 'messages.html' %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Dalej">
+</form>

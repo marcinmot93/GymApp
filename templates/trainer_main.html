@@ -1,0 +1,21 @@
+<h1>Hello {{ trainer.first_name }}</h1>
+<ul>Your Pupils:
+    {%  for pupil in pupils %}
+        {% for p in pupil.trainingplan_set.all %}
+            {% if p.status == 1 %}
+                <li> {{ pupil.first_name }} {{ pupil.last_name }} <a href="/details/trainer/{{ trainer.id }}/{{ pupil.id }}/">Details</a></li>
+            {% elif p.status == 2 %}
+                <li>{{ pupil.first_name }} {{ pupil.last_name }} <a href="/create_plan/{{ trainer.id }}/{{ pupil.id }}/">Create Plan</a></li>
+            {% endif %}
+            {% empty %}
+                <li>{{ pupil.first_name }} {{ pupil.last_name }} <a href="/create_plan/{{ trainer.id }}/{{ pupil.id }}/">Create Plan</a></li>
+        {% endfor %}
+    {% endfor %}
+</ul>
+<p>
+   <a href="/exercises/{{ trainer.id }}/">Your Exercises</a>
+</p>
+
+<p><a href="/">Main</a> <a href="/logout/">Logout</a></p>
+
+

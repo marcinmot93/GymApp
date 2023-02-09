@@ -1,0 +1,74 @@
+<h1> Plan name: {{ plan.name }}</h1>
+{% if plan.status == 1 %}
+<p>Create or edit day plan</p>
+     {% include 'messages.html' %}
+<form method="post">
+    {% csrf_token %}
+     Choose exercise: <select name="exercise">
+        {% for ex in exercises %}
+        <option value="{{ ex.id }}">{{ ex.name }}</option>
+        {% endfor %}
+    </select>
+    <p>Series: <input type="number" name="series" placeholder="series"></p>
+    <p>Reps: <input type="number" name="reps" placeholder="reps"></p>
+    Choose day: <select name="day">
+        {% for day in days %}
+        <option value="{{ day.id }}">{{ day.name }}</option>
+        {% endfor %}
+    </select>
+    <p><input type="submit" value="Add"></p>
+</form>
+<p>{{ first.name }}</p>
+<p>
+{% for i in plan_days %}
+    {% if i.training_day.id == 1 %}
+        <li>{{ i.exercise.name }} series: {{ i.series }} reps: {{ i.reps }}   <a href="/delete_from_plan/{{ pupil.id }}/{{ i.id }}/">delete</a> </li>
+    {% endif %}
+{% endfor %}
+</p>
+
+<p>{{ second.name }}</p>
+{% for i in plan_days %}
+    {% if i.training_day.id == 2 %}
+        <li>{{ i.exercise.name }} series: {{ i.series }} reps: {{ i.reps }}   <a href="/delete_from_plan/{{ pupil.id }}/{{ i.id }}/">delete</a> </li>
+    {% endif %}
+{% endfor %}
+
+<p>{{ third.name }}</p>
+{% for i in plan_days %}
+    {% if i.training_day.id == 3 %}
+        <li>{{ i.exercise.name }} series: {{ i.series }} reps: {{ i.reps }}   <a href="/delete_from_plan/{{ pupil.id }}/{{ i.id }}/">delete</a> </li>
+    {% endif %}
+{% endfor %}
+
+<p>{{ fourth.name }}</p>
+{% for i in plan_days %}
+    {% if i.training_day.id == 4 %}
+        <li>{{ i.exercise.name }} series: {{ i.series }} reps: {{ i.reps }}   <a href="/delete_from_plan/{{ pupil.id }}/{{ i.id }}/">delete</a> </li>
+    {% endif %}
+{% endfor %}
+
+<p>{{ fifth.name }}</p>
+{% for i in plan_days %}
+    {% if i.training_day.id == 5 %}
+        <li>{{ i.exercise.name }} series: {{ i.series }} reps: {{ i.reps }}   <a href="/delete_from_plan/{{ pupil.id }}/{{ i.id }}/">delete</a> </li>
+    {% endif %}
+{% endfor %}
+<p>{{ sixth.name }}</p>
+{% for i in plan_days %}
+    {% if i.training_day.id == 6 %}
+        <li>{{ i.exercise.name }} series: {{ i.series }} reps: {{ i.reps }}   <a href="/delete_from_plan/{{ pupil.id }}/{{ i.id }}/">delete</a> </li>
+    {% endif %}
+{% endfor %}
+<p>{{ seventh.name }}</p>
+{% for i in plan_days %}
+    {% if i.training_day.id == 7 %}
+        <li>{{ i.exercise.name }} series: {{ i.series }} reps: {{ i.reps }}   <a href="/delete_from_plan/{{ pupil.id }}/{{ i.id }}/">delete</a> </li>
+    {% endif %}
+{% endfor %}
+
+{% else %}
+<p>This plan is . Check history</p>
+{% endif %}
+
+<p><a href="/main/trainer/{{ trainer.id }}">Main</a>

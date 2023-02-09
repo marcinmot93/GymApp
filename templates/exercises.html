@@ -1,0 +1,15 @@
+{% include 'messages.html' %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Add Exercise">
+</form>
+
+<p>
+    {% for ex in exercises %}
+    <li>{{ ex.name }}  <a href="/exercise/{{ ex.id }}/edit/">Edit</a>  <a href="/exercise/{{ ex.id }}/delete/">Delete</a></li>
+    {% endfor %}
+</p>
+
+<a href="/main/trainer/{{ trainer.id }}/">Back</a>

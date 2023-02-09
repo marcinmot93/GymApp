@@ -1,0 +1,170 @@
+<h1>Your Pupil: {{ pupil.first_name }} {{ pupil.last_name }}</h1>
+{% include 'messages.html' %}
+{% if training_plan %}
+    <h2>His actual plan: {{ training_plan.name }}</h2>
+    <p>From {{ training_plan.start_date }} for  {{ training_plan.week_training_days }} weeks</p>
+
+{% if first %}
+<p><table>
+  <tr>
+    <th>{{ first.name }} Day</th>
+    <th>Series</th>
+    <th>Reps</th>
+  </tr>
+  {% for i in days %}
+    {% if i.training_day.id == 1 %}
+      <tr>
+          <td><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+        <td>{{ i.series }}</td>
+        <td>{{ i.reps }}</td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+</table>
+    </p>
+    {% endif %}
+
+
+    {% if second %}
+    <p>
+<table>
+  <tr>
+    <th>{{ second.name }} Day</th>
+    <th>Series</th>
+    <th>Reps</th>
+  </tr>
+  {% for i in days %}
+    {% if i.training_day.id == 2 %}
+      <tr>
+          <td><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+        <td>{{ i.series }}</td>
+        <td>{{ i.reps }}</td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+</table>
+    </p>
+    {% endif %}
+
+    {% if third %}
+        <p>
+            <table>
+                <tr>
+                    <th>{{ third.name }} Day</th>
+                    <th>Series</th>
+                    <th>Reps</th>
+                </tr>
+                {% for i in days %}
+                    {% if i.training_day.id == 3 %}
+                        <tr>
+                    <td><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+                    <td>{{ i.series }}</td>
+                    <td>{{ i.reps }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </p>
+    {% endif %}
+
+    {% if fourth %}
+        <p>
+<table>
+  <tr>
+    <th>{{ fourth.name }} Day</th>
+    <th>Series</th>
+    <th>Reps</th>
+  </tr>
+  {% for i in days %}
+    {% if i.training_day.id == 4 %}
+      <tr>
+          <td><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+        <td>{{ i.series }}</td>
+        <td>{{ i.reps }}</td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+</table>
+        </p>
+    {% endif %}
+
+    {% if fifth %}
+        <p>
+<table>
+  <tr>
+    <th>{{ fifth.name }} Day</th>
+    <th>Series</th>
+    <th>Reps</th>
+  </tr>
+  {% for i in days %}
+    {% if i.training_day.id == 5 %}
+      <tr>
+          <td><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+        <td>{{ i.series }}</td>
+        <td>{{ i.reps }}</td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+</table>
+        </p>
+    {% endif %}
+
+    {% if sixth %}
+        <p>
+<table>
+  <tr>
+    <th>{{ sixth.name }} Day</th>
+    <th>Series</th>
+    <th>Reps</th>
+  </tr>
+  {% for i in days %}
+    {% if i.training_day.id == 6 %}
+      <tr>
+          <td><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+        <td>{{ i.series }}</td>
+        <td>{{ i.reps }}</td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+</table>
+        </p>
+    {% endif %}
+
+    {% if seventh %}
+        <p>
+<table>
+  <tr>
+    <th>{{ seventh.name }} Day</th>
+    <th>Series</th>
+    <th>Reps</th>
+  </tr>
+  {% for i in days %}
+    {% if i.training_day.id == 7 %}
+      <tr>
+          <td><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+        <td>{{ i.series }}</td>
+        <td>{{ i.reps }}</td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+</table>
+        </p>
+    {% endif %}
+
+    <p><a href="/exercise_plan/{{ trainer.id }}/{{ pupil.id }}/{{ training_plan.id }}">Edit Plan</a></p>
+
+    {% if left_days %}
+        <p>Left Days: {{ left_days }}</p>
+    {% endif %}
+    {% if till_start %}
+        <p>Days till start: {{ till_start }}</p>
+    {% endif %}
+
+
+
+{% else %}
+    <p>Your plan is being prepared. We'll inform you when it's done</p>
+    <p><a href="/logout/">Logout</a></p>
+{% endif %}
+
+<p><a href="/main/trainer/{{ trainer.id }}">Main</a>
