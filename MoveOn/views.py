@@ -164,78 +164,56 @@ class ThePupilMainView(View):
 
     def get(self, request, pupil_id):
 
-        if request.user.is_authenticated:
-            if hasattr(request.user, 'thepupil') and request.user.thepupil.id == pupil_id:
-                pupil = get_object_or_404(ThePupil, id=pupil_id)
-
-                for plan in pupil.trainingplan_set.all():
-                    if plan.status == 1:
-                        training_plan = get_object_or_404(pupil.trainingplan_set.all(), status=1)
-                        if training_plan.check_plan_expiration() is False:
-                            messages.error(request, 'Your plan has ended')
-                            return redirect(f'/main/{pupil_id}/')
-                        left_days = None
-                        till_start = None
-                        if datetime.datetime.now().date() >= training_plan.start_date:
-                            left_days = training_plan.check_days_left
-                        else:
-                            till_start = training_plan.till_start_days
-                        days = training_plan.planexercises_set.all()
-                        first = None
-                        second = None
-                        third = None
-                        fourth = None
-                        fifth = None
-                        sixth = None
-                        seventh = None
-                        for i in days:
-                            if i.training_day.id == 1:
-                                first = i.training_day
-                            if i.training_day.id == 2:
-                                second = i.training_day
-                            if i.training_day.id == 3:
-                                third = i.training_day
-                            if i.training_day.id == 4:
-                                fourth = i.training_day
-                            if i.training_day.id == 5:
-                                fifth = i.training_day
-                            if i.training_day.id == 6:
-                                sixth = i.training_day
-                            if i.training_day.id == 7:
-                                seventh = i.training_day
-
-                        context = {'pupil': pupil,
-                                    'training_plan': training_plan,
-                                    'days': days,
-                                    }
-                        if first:
-                            context['first'] = first
-                        if second:
-                            context['second'] = second
-                        if third:
-                            context['third'] = third
-                        if fourth:
-                            context['fourth'] = fourth
-                        if fifth:
-                            context['fifth'] = fifth
-                        if sixth:
-                            context['sixth'] = sixth
-                        if seventh:
-                            context['seventh'] = seventh
-                        if left_days:
-                            context['left_days'] = left_days
-                        if till_start:
-                            context['till_start'] = till_start
-
-                        return render(request, 'pupil_main.html', context)
-                    else:
-                        return render(request, 'pupil_main_without_plan.html', {'pupil': pupil})
-                else:
-                    return render(request, 'pupil_main_without_plan.html', {'pupil': pupil})
-            else:
-                return redirect('/')
-        else:
+        if not request.user.is_authenticated:
             return redirect('/')
+        if not hasattr(request.user, 'thepupil'):
+            return redirect('/')
+        if not request.user.thepupil.id == pupil_id:
+            return redirect('/')
+        pupil = get_object_or_404(ThePupil, id=pupil_id)
+
+        for plan in pupil.trainingplan_set.all():
+            if plan.status == 1:
+                training_plan = get_object_or_404(pupil.trainingplan_set.all(), status=1)
+                if training_plan.check_plan_expiration() is False:
+                    messages.error(request, 'Your plan has ended')
+                    return redirect(f'/main/{pupil_id}/')
+                left_days = None
+                till_start = None
+                if datetime.datetime.now().date() >= training_plan.start_date:
+                    left_days = training_plan.check_days_left
+                else:
+                    till_start = training_plan.till_start_days
+                days = training_plan.planexercises_set.all()
+                mapping = {
+                    1: 'first',
+                    2: 'second',
+                    3: 'third',
+                    4: 'fourth',
+                    5: 'fifth',
+                    6: 'sixth',
+                    7: 'seventh',
+                }
+                ctx = {mapping[day.training_day.id]: day.training_day for day in days}
+
+
+                context = {'pupil': pupil,
+                            'training_plan': training_plan,
+                            'days': days,
+                           **ctx
+                            }
+
+                if left_days:
+                    context['left_days'] = left_days
+                if till_start:
+                    context['till_start'] = till_start
+
+                return render(request, 'pupil_main.html', context)
+            else:
+                return render(request, 'pupil_main_without_plan.html', {'pupil': pupil})
+        else:
+            return render(request, 'pupil_main_without_plan.html', {'pupil': pupil})
+
 
 
 class CreatePlanView(View):
@@ -295,32 +273,27 @@ class CreateExercisePlan(View):
 
     def get(self, request, trainer_id, pupil_id, plan_id):
 
+        if not request.user.is_authenticated:
+            return redirect('/')
+        if not hasattr(request.user, 'trainer'):
+            return redirect('/')
+        if not request.user.trainer.id == trainer_id:
+            return redirect('/')
         trainer = get_object_or_404(Trainer, id=trainer_id)
         pupil = get_object_or_404(ThePupil, id=pupil_id)
         plan = get_object_or_404(TrainingPlan, id=plan_id)
         plan_days = plan.planexercises_set.all()
-        first = None
-        second = None
-        third = None
-        fourth = None
-        fifth = None
-        sixth = None
-        seventh = None
-        for i in plan_days:
-            if i.training_day.id == 1:
-                first = i.training_day
-            if i.training_day.id == 2:
-                second = i.training_day
-            if i.training_day.id == 3:
-                third = i.training_day
-            if i.training_day.id == 4:
-                fourth = i.training_day
-            if i.training_day.id == 5:
-                fifth = i.training_day
-            if i.training_day.id == 6:
-                sixth = i.training_day
-            if i.training_day.id == 7:
-                seventh = i.training_day
+        training_days = {
+            1: 'first',
+            2: 'second',
+            3: 'third',
+            4: 'fourth',
+            5: 'fifth',
+            6: 'sixth',
+            7: 'seventh',
+        }
+
+        ctx = {training_days[day.training_day.id]: day.training_day for day in plan_days}
 
         context = {'trainer': trainer,
                    'pupil': pupil,
@@ -329,21 +302,8 @@ class CreateExercisePlan(View):
                    'plan': plan,
                    'plan_days': plan_days,
                    }
-        if first:
-            context['first'] = first
-        if second:
-            context['second'] = second
-        if third:
-            context['third'] = third
-        if fourth:
-            context['fourth'] = fourth
-        if fifth:
-            context['fifth'] = fifth
-        if sixth:
-            context['sixth'] = sixth
-        if seventh:
-            context['seventh'] = seventh
 
+        context.update(ctx)
 
         return render(request, 'create_exercise_plan.html', context)
 
@@ -449,48 +409,25 @@ class TrainerPupilView(View):
                 else:
                     till_start = training_plan.till_start_days
                 days = training_plan.planexercises_set.all()
-                first = None
-                second = None
-                third = None
-                fourth = None
-                fifth = None
-                sixth = None
-                seventh = None
-                for i in days:
-                    if i.training_day.id == 1:
-                        first = i.training_day
-                    if i.training_day.id == 2:
-                        second = i.training_day
-                    if i.training_day.id == 3:
-                        third = i.training_day
-                    if i.training_day.id == 4:
-                        fourth = i.training_day
-                    if i.training_day.id == 5:
-                        fifth = i.training_day
-                    if i.training_day.id == 6:
-                        sixth = i.training_day
-                    if i.training_day.id == 7:
-                        seventh = i.training_day
+                training_days = {
+                    1: 'first',
+                    2: 'second',
+                    3: 'third',
+                    4: 'fourth',
+                    5: 'fifth',
+                    6: 'sixth',
+                    7: 'seventh',
+                }
+
+                ctx = {training_days[day.training_day.id]: day.training_day for day in days}
 
                 context = {'pupil': pupil,
                             'training_plan': training_plan,
                             'days': days,
-                            'trainer': trainer
+                            'trainer': trainer,
+                           **ctx,
                             }
-                if first:
-                    context['first'] = first
-                if second:
-                    context['second'] = second
-                if third:
-                    context['third'] = third
-                if fourth:
-                    context['fourth'] = fourth
-                if fifth:
-                    context['fifth'] = fifth
-                if sixth:
-                    context['sixth'] = sixth
-                if seventh:
-                    context['seventh'] = seventh
+
                 if left_days:
                     context['left_days'] = left_days
                 if till_start:
