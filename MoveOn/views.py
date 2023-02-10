@@ -113,7 +113,7 @@ class CreateUserView(View):
                 return redirect(f'/main/trainer/{trainer.id}/')
 
         else:
-            return render(request, 'create_account.html', {'form': form})
+            return redirect('/create_account/')
 
 
 class PupilDetailsView(View):
@@ -124,23 +124,45 @@ class PupilDetailsView(View):
             return redirect('/')
         if hasattr(request.user, 'thepupil') or hasattr(request.user, 'trainer'):
             return redirect('/')
-        user = User.objects.get(id=user_id)
-        trainers = Trainer.objects.all()
+        if not request.user.id == user_id:
+            return redirect('/')
+        user = get_object_or_404(User, id=user_id)
+        initial_data = {
+            'name': user.first_name,
+            'last_name': user.last_name,
+        }
+        form = PupilDetailsForm(
+            initial=initial_data
+        )
+        form.fields['trainer'].choices = [
+            (trainer.id, f'{trainer.name}') for trainer in Trainer.objects.all()
+        ]
 
-        return render(request, 'pupil_details.html', {'user': user, 'trainers': trainers})
+        return render(request, 'pupil_details.html', {'form': form})
 
     def post(self, request, user_id):
 
-        user = User.objects.get(id=user_id)
-        first_name = request.POST.get('name')
-        last_name = request.POST.get('last_name')
-        starting_weight = request.POST.get('starting_weight')
-        height = request.POST.get('height')
-        trainer = request.POST.get('trainer')
-        trainer = Trainer.objects.get(id=int(trainer))
-        pupil = ThePupil.objects.create(user=user, first_name=first_name, last_name=last_name, starting_weight=starting_weight, height=height, trainer=trainer)
+        form = PupilDetailsForm(request.POST)
+        form.fields['trainer'].choices = [
+            (trainer.id, f'{trainer.name}') for trainer in Trainer.objects.all()
+        ]
 
-        return redirect(f'/main/{pupil.id}')
+        if form.is_valid():
+            data = form.cleaned_data
+
+            user = get_object_or_404(User, id=user_id)
+            pupil = ThePupil.objects.create(
+                user=user,
+                first_name=data.get('name'),
+                last_name=data.get('last_name'),
+                starting_weight=data.get('starting_weight'),
+                height=data.get('height'),
+                trainer=Trainer.objects.get(id=int(data.get('trainer'))),
+            )
+
+            return redirect(f'/main/{pupil.id}/')
+        print(form.errors)
+        return redirect(f'/creating_details/{user_id}/')
 
 
 class TrainerMainView(View):
@@ -283,6 +305,10 @@ class CreateExercisePlan(View):
         pupil = get_object_or_404(ThePupil, id=pupil_id)
         plan = get_object_or_404(TrainingPlan, id=plan_id)
         plan_days = plan.planexercises_set.all()
+        form = CreateExercisePlanForm()
+        form.fields['exercise'].choices = [
+            (ex.id, f'{ex.name}') for ex in trainer.exercise_set.all()
+        ]
         training_days = {
             1: 'first',
             2: 'second',
@@ -297,10 +323,9 @@ class CreateExercisePlan(View):
 
         context = {'trainer': trainer,
                    'pupil': pupil,
-                   'days': DayNumber.objects.all(),
-                   'exercises': trainer.exercise_set.all(),
                    'plan': plan,
                    'plan_days': plan_days,
+                   'form': form,
                    }
 
         context.update(ctx)
@@ -438,4 +463,5 @@ class TrainerPupilView(View):
                 return render(request, 'trainer_pupil_main.html', {'pupil': pupil})
         else:
             return render(request, 'trainer_pupil_main.html', {'pupil': pupil})
+
 

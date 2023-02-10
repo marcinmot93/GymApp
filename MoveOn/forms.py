@@ -69,3 +69,20 @@ class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
+class PupilDetailsForm(forms.Form):
+    name = forms.CharField()
+    last_name = forms.CharField()
+    starting_weight = forms.IntegerField()
+    height = forms.IntegerField()
+    trainer = forms.ChoiceField()
+
+class CreateExercisePlanForm(forms.Form):
+    exercise = forms.ChoiceField()
+    series = forms.IntegerField()
+    reps = forms.IntegerField()
+    training_day = forms.ChoiceField(choices=DAYS)
+
+
+class testForm(forms.Form):
+    series = forms.IntegerField()
+    exercise = forms.ChoiceField()

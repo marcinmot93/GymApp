@@ -4,20 +4,10 @@
      {% include 'messages.html' %}
 <form method="post">
     {% csrf_token %}
-     Choose exercise: <select name="exercise">
-        {% for ex in exercises %}
-        <option value="{{ ex.id }}">{{ ex.name }}</option>
-        {% endfor %}
-    </select>
-    <p>Series: <input type="number" name="series" placeholder="series"></p>
-    <p>Reps: <input type="number" name="reps" placeholder="reps"></p>
-    Choose day: <select name="day">
-        {% for day in days %}
-        <option value="{{ day.id }}">{{ day.name }}</option>
-        {% endfor %}
-    </select>
+    {{form.as_p}}
     <p><input type="submit" value="Add"></p>
 </form>
+
 <p>{{ first.name }}</p>
 <p>
 {% for i in plan_days %}
