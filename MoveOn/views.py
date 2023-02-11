@@ -216,13 +216,24 @@ class ThePupilMainView(View):
                     6: 'sixth',
                     7: 'seventh',
                 }
+                mapping2 = {
+                    1: 'first1',
+                    2: 'second2',
+                    3: 'third3',
+                    4: 'fourth4',
+                    5: 'fifth5',
+                    6: 'sixth6',
+                    7: 'seventh7',
+                }
                 ctx = {mapping[day.training_day.id]: day.training_day for day in days}
 
+                ctx2 = {mapping2[day.training_day.id]: days.filter(training_day=day.training_day.id) for day in days}
 
                 context = {'pupil': pupil,
                             'training_plan': training_plan,
                             'days': days,
-                           **ctx
+                           **ctx,
+                           **ctx2,
                             }
 
                 if left_days:
