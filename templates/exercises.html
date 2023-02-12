@@ -1,15 +1,23 @@
+{% extends 'layout.html' %}
 {% include 'messages.html' %}
 
+{% block content %}
+<div class="form-group ml-3 mr-3 mt-3">
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Add Exercise">
+    <input class="btn btn-primary mt-4 mb-3" type="submit" value="Add Exercise">
 </form>
-
+</div>
 <p>
-    {% for ex in exercises %}
-    <li>{{ ex.name }}  <a href="/exercise/{{ ex.id }}/edit/">Edit</a>  <a href="/exercise/{{ ex.id }}/delete/">Delete</a></li>
-    {% endfor %}
+    <h3 class="list-group mb-3 ml-3 text-primary"> <strong> My exercises: </strong> </h3>
+        {% for ex in exercises %}
+        <li class="list-group-item">{{ ex.name }}  <a href="/exercise/{{ ex.id }}/edit/">Edit</a>
+            <a href="/exercise/{{ ex.id }}/delete/">Delete</a></li>
+        {% endfor %}
+
 </p>
 
-<a href="/main/trainer/{{ trainer.id }}/">Back</a>
+<a class="btn btn-primary ml-3 mb-3" href="/main/trainer/{{ trainer.id }}/">Back</a>
+
+{% endblock %}

@@ -1,4 +1,8 @@
-
-<h1>Witaj {{ trainer.first_name }}</h1>
-<p><a href="/main/trainer/{{ trainer.id }}/">Dashboard</a></p>
-<p><a href="/logout/">Logout</a></p>
+{% extends 'layout.html' %}
+{% block content %}
+<h1 class="text-primary text-center ml-3 mb-4 mt-4"> How you doin {{ trainer.first_name }}? </h1>
+    <h2 class="text-center ml-3 mb-4 mt-4">Ready for a training? MoveOn!</h2>
+<div class="text-center"><a class="btn btn-primary ml-3 mt-4" href="/main/trainer/{{ trainer.id }}/">Dashboard</a>
+<a class="btn btn-primary ml-2 mt-4" href="/logout/">Logout</a>
+</div>>
+{% endblock %}

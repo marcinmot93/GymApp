@@ -177,23 +177,6 @@ class TrainerMainView(View):
                     'trainer': trainer,
                     'pupils': pupils,
                 }
-                empty_pupils = []
-                for pupil in pupils:
-                    if pupil.trainingplan_set.exists():
-                        plan_training = pupil.trainingplan_set.all()
-                        status = {
-                            1: 'active',
-                            2: 'to_do',
-                            3: 'ended',
-                        }
-
-                        ctx = {status[p.status]: plan_training.filter(status=p.status) for p in plan_training}
-                        context.update(ctx)
-
-                    else:
-                        empty_pupils.append(pupil)
-                ctx2 = {'empty': empty_pupils}
-                context.update(ctx2)
 
                 return render(request, 'trainer_main.html', context)
             else:
@@ -504,4 +487,13 @@ class TrainerPupilView(View):
         else:
             return render(request, 'trainer_pupil_main.html', {'pupil': pupil})
 
+class DeleteExercise(View):
+
+    def get(self, request, ex_id):
+
+        exercise = Exercise.objects.get(id=ex_id)
+        del_id = exercise.trainer.id
+        exercise.delete()
+
+        return redirect(f'/exercises/{del_id}/')
 

@@ -1,8 +1,14 @@
-{{ trainer.first_name }}, create new training plan for {{ pupil.first_name }} {{ pupil.last_name }}: waga {{ pupil.starting_weight }} kg,
-wzrost {{ pupil.height }} cm
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="ml-3 mt-3"> {{ trainer.first_name }}, create new training plan for <strong>{{ pupil.first_name }}  {{ pupil.last_name }}</strong>: waga
+        <strong>{{ pupil.starting_weight }} kg</strong>, wzrost <strong>{{ pupil.height }} cm</strong>
+</div>
 {% include 'messages.html' %}
-<form method="post">
+<div class="form-group">
+<form class="ml-3 mr-3 mt-3" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Dalej">
+    <input class="btn btn-primary" type="submit" value="Dalej">
 </form>
+</div>
+{% endblock %}

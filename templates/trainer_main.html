@@ -1,22 +1,38 @@
 {% extends 'layout.html' %}
 {% block content %}
+<div>
 <h1 class="text-primary text-center mt-3 mb-3">Hello {{ trainer.first_name }}</h1>
-    <ul class="mb-4 mt-4"> <strong>Your Pupils: </strong>
+    <h3 class="mb-4 mt-4 ml-3"> <strong>Your Pupils: </strong></h3>
+    {% for pupil in pupils %}
+        {% for p in pupil.trainingplan_set.all %}
+            {% if p.status == 1 %}
+                <li class="list-group-item"> {{ p.the_pupil.name}} <a href="/details/trainer/{{ trainer.id }}/{{ p.the_pupil.id }}/">Details</a></li>
+            {% endif %}
+            {% if p.status == 2 %}
+                <li class="list-group-item">{{ p.name }} <a href="/create_plan/{{ trainer.id }}/{{ p.id }}/">Create Plan</a></li>
+            {% endif %}
+            {% empty %}
+                <li class="list-group-item">{{ pupil.name }} <a href="/create_plan/{{ trainer.id }}/{{ pupil.id }}/">Create Plan</a></li>
+        {% endfor %}
+    {% endfor %}
+</div>
 
-        {% for p in active %}
-            <li> {{ p.name}} <a href="/details/trainer/{{ trainer.id }}/{{ p.the_pupil.id }}/">Details</a></li>
-        {% endfor %}
-        {% for p in to_do %}
-            <li>{{ p.the_pupil.name }} <a href="/create_plan/{{ trainer.id }}/{{ p.the_pupil.id }}/">Create Plan</a></li>
-        {% endfor %}
-        {% for p in empty %}
-            <li>{{ p.first_name }} {{ p.last_name }} <a href="/create_plan/{{ trainer.id }}/{{ p.id }}/">Create Plan</a></li>
+<div>
+    <h3 class="mb-4 mt-4 ml-3"> <strong> Ended plans: </strong> </h3>
+        {% for pupil in pupils %}
+            {% for p in pupil.trainingplan_set.all %}
+                {% if p.status == 3 %}
+                    <li class="list-group-item">{{ p.name }}</li>
+                {% endif %}
+            {% endfor %}
         {% endfor %}
 
-</ul>
-<p>
-   <a href="/exercises/{{ trainer.id }}/">Your Exercises</a>
-    <a href="/static">Main</a> <a href="/logout/">Logout</a>
+</div>
+
+<p class="text-center mt-4">
+   <a class="btn btn-primary ml-4" href="/exercises/{{ trainer.id }}/">Your Exercises</a>
 </p>
-
+<p class="text-center">
+   <a class="btn btn-primary ml-4" href="/">Main</a> <a class="btn btn-primary ml-1" href="/logout/">Logout</a>
+</p>
 {% endblock %}

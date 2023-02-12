@@ -53,16 +53,16 @@ class CreateUserForm(forms.Form):
 
 
 class AddExerciseForm(forms.Form):
-    name = forms.CharField(label='Exercise name')
-    description = forms.CharField(widget=forms.Textarea, required=False)
-    movie_link = forms.CharField(label='Link')
+    name = forms.CharField(label='Exercise name', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}), required=False)
+    movie_link = forms.CharField(label='Link', widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 
 class AddTrainingPlanForm(forms.Form):
-    name = forms.CharField(label='Plan name')
-    description = forms.CharField(widget=forms.Textarea, required=False)
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    week_training_days = forms.ChoiceField(choices=WEEKS)
+    name = forms.CharField(label='Plan name', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}), required=False)
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+    week_training_days = forms.ChoiceField(choices=WEEKS, widget=forms.Select(attrs={'class': 'form-control'}))
 
 
 class LoginForm(forms.Form):
@@ -77,12 +77,8 @@ class PupilDetailsForm(forms.Form):
     trainer = forms.ChoiceField()
 
 class CreateExercisePlanForm(forms.Form):
-    exercise = forms.ChoiceField()
-    series = forms.IntegerField()
-    reps = forms.IntegerField()
-    training_day = forms.ChoiceField(choices=DAYS)
+    exercise = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}))
+    series = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    reps = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    training_day = forms.ChoiceField(choices=DAYS, widget=forms.Select(attrs={'class': 'form-control'}))
 
-
-class testForm(forms.Form):
-    series = forms.IntegerField()
-    exercise = forms.ChoiceField()

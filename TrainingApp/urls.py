@@ -31,5 +31,6 @@ urlpatterns = [
     path('exercise_plan/<int:trainer_id>/<int:pupil_id>/<int:plan_id>/', views.CreateExercisePlan.as_view()),
     path('details/trainer/<int:trainer_id>/<int:pupil_id>/', views.TrainerPupilView.as_view()),
     path('delete_from_plan/<int:pupil_id>/<int:plan_exercise_id>/', views.DeleteFromExercisePlan.as_view()),
+    path('exercise/<int:ex_id>/delete/', views.DeleteExercise.as_view())
 
 ]
