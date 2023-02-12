@@ -1,27 +1,27 @@
 {% extends 'layout.html' %}
 {% block content %}
-<h1 class="text-center mb-3">Hello {{ pupil.first_name }} {{ pupil.last_name }}</h1>
+<h1 class="text-center text-primary mt-3 mb-3">Hello {{ pupil.first_name }} {{ pupil.last_name }}</h1>
 {% include 'messages.html' %}
 
-<div class="mb-3">
+<div class="ml-3 mb-3">
   <strong>Your actual plan:</strong> {{ training_plan.name }}<br>
   <strong>From:</strong> {{ training_plan.start_date }}<br>
   <strong>For:</strong> {{ training_plan.week_training_days }} weeks
 </div>
 
 {% if first %}
-<table class="table">
+<table class="table ml-3 text-center">
   <thead class="thead-light">
   <tr class="d-flex">
-    <th scope="col" class="col-3">{{ second.name }} Day</th>
+    <th scope="col" class="col-3">{{ first.name }} Day</th>
     <th scope="col" class="col-2">Series</th>
     <th scope="col" class="col-1">Reps</th>
   </tr>
   </thead>
   <tbody>
-  {% for i in second2 %}
+  {% for i in first1 %}
       <tr class="d-flex">
-        <td class="col-3"><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+        <td class="col-3 red_one" ><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
         <td class="col-2">{{ i.series }}</td>
         <td class="col-1">{{ i.reps }}</td>
       </tr>
@@ -31,7 +31,7 @@
 {% endif %}
 
 {% if second %}
-<table class="table">
+<table class="table ml-3 text-center">
   <thead class="thead-light">
   <tr class="d-flex">
     <th scope="col" class="col-3">{{ second.name }} Day</th>
@@ -52,7 +52,7 @@
 {% endif %}
 
 {% if third %}
-<table class="table">
+<table class="table ml-3 text-center">
   <thead class="thead-light">
   <tr class="d-flex">
     <th scope="col" class="col-3">{{ third.name }} Day</th>
@@ -73,7 +73,7 @@
 {% endif %}
 
 {% if fourth %}
-<table class="table">
+<table class="table ml-3 text-center">
   <thead class="thead-light">
   <tr class="d-flex">
     <th scope="col" class="col-3">{{ fourth.name }} Day</th>
@@ -93,7 +93,7 @@
 </table>
 {% endif %}
 {% if fifth %}
-<table class="table">
+<table class="table ml-3 text-center">
   <thead class="thead-light">
   <tr class="d-flex">
     <th scope="col" class="col-3">{{ fifth.name }} Day</th>
@@ -114,7 +114,7 @@
 {% endif %}
 
 {% if sixth %}
-<table class="table">
+<table class="table ml-3 text-center">
   <thead class="thead-light">
   <tr class="d-flex">
     <th scope="col" class="col-3">{{ sixth.name }} Day</th>
@@ -135,7 +135,7 @@
 {% endif %}
 
 {% if seventh %}
-<table class="table">
+<table class="table ml-3 text-center">
   <thead class="thead-light">
   <tr class="d-flex">
     <th scope="col" class="col-3">{{ seventh.name }} Day</th>
@@ -156,13 +156,13 @@
 {% endif %}
 
 {% if left_days %}
-    Left Days: {{ left_days }}
+    <p class="ml-3"><strong> Days: </strong> {{ left_days }}</p>
 {% endif %}
 {% if till_start %}
-    Days till start: {{ till_start }}
+    <p class="ml-3"><strong> Days till start: </strong> {{ till_start }} </p>
 {% endif %}
 
 {% if user.is_authenticated %}
-<p>{{ user.thepupil.first_name }}  <a href="/logout/">Logout</a></p>
+<div> <a class="btn btn-primary ml-3 mb-3" href="/logout/">Logout</a> </div>
 {% endif %}
 {% endblock %}

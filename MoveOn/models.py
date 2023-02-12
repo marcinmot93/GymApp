@@ -65,10 +65,10 @@ class TrainingPlan(models.Model):
     week_training_days = models.IntegerField(choices=WEEKS)
     exercises = models.ManyToManyField(Exercise, through="PlanExercises")
 
-    def check_plan_expiration(self):
+    def check_plan_expire(self):
         now = datetime.datetime.now().date()
         if (now - self.start_date).days / 7 >= self.week_training_days:
-            self.status = 2
+            self.status = 3
             self.save()
             return False
         return True

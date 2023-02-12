@@ -173,9 +173,29 @@ class TrainerMainView(View):
             if hasattr(request.user, 'trainer') and request.user.trainer.id == trainer_id:
                 trainer = get_object_or_404(Trainer, id=request.user.trainer.id)
                 pupils = trainer.thepupil_set.all()
+                context = {
+                    'trainer': trainer,
+                    'pupils': pupils,
+                }
+                empty_pupils = []
+                for pupil in pupils:
+                    if pupil.trainingplan_set.exists():
+                        plan_training = pupil.trainingplan_set.all()
+                        status = {
+                            1: 'active',
+                            2: 'to_do',
+                            3: 'ended',
+                        }
 
-                return render(request, 'trainer_main.html', {'trainer': trainer, 'pupils': pupils})
+                        ctx = {status[p.status]: plan_training.filter(status=p.status) for p in plan_training}
+                        context.update(ctx)
 
+                    else:
+                        empty_pupils.append(pupil)
+                ctx2 = {'empty': empty_pupils}
+                context.update(ctx2)
+
+                return render(request, 'trainer_main.html', context)
             else:
                 return redirect('/')
         else:
@@ -197,7 +217,7 @@ class ThePupilMainView(View):
         for plan in pupil.trainingplan_set.all():
             if plan.status == 1:
                 training_plan = get_object_or_404(pupil.trainingplan_set.all(), status=1)
-                if training_plan.check_plan_expiration() is False:
+                if training_plan.check_plan_expire() is False:
                     messages.error(request, 'Your plan has ended')
                     return redirect(f'/main/{pupil_id}/')
                 left_days = None
@@ -267,7 +287,7 @@ class CreatePlanView(View):
 
         form = AddTrainingPlanForm()
 
-        return render(request, 'create_plan.html', {'trainer':trainer, 'pupil': pupil, 'form': form})
+        return render(request, 'create_plan.html', {'trainer': trainer, 'pupil': pupil, 'form': form})
 
 
     def post(self, request, trainer_id, pupil_id ):
@@ -345,26 +365,35 @@ class CreateExercisePlan(View):
 
     def post(self, request, trainer_id, pupil_id, plan_id):
 
+        form = CreateExercisePlanForm(request.POST)
         trainer = get_object_or_404(Trainer, id=trainer_id)
         pupil = get_object_or_404(ThePupil, id=pupil_id)
         plan = get_object_or_404(TrainingPlan, id=plan_id)
 
-        exercise = request.POST.get('exercise')
-        exercise = get_object_or_404(Exercise, id=exercise)
-        series = request.POST.get('series')
-        if not series:
-            messages.error(request, "Fields cannot be empty")
-            return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
-        reps = request.POST.get('reps')
-        if not reps:
-            messages.error(request, "Fields cannot be empty")
-            return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
-        day = request.POST.get('day')
-        day = get_object_or_404(DayNumber, id=day)
+        form.fields['exercise'].choices = [
+            (ex.id, f'{ex.name}') for ex in trainer.exercise_set.all()
+        ]
 
-        PlanExercises.objects.create(exercise=exercise, training_plan=plan, series=series, reps=reps, training_day=day)
+        if form.is_valid():
+            data = form.cleaned_data
+            exercise = data.get('exercise')
+            exercise = get_object_or_404(Exercise, id=exercise)
+            series = data.get('series')
+            if not series:
+                messages.error(request, "Fields cannot be empty")
+                return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
+            reps = data.get('reps')
+            if not reps:
+                messages.error(request, "Fields cannot be empty")
+                return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
+            day = data.get('training_day')
+            day = get_object_or_404(DayNumber, id=day)
 
-        return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
+            PlanExercises.objects.create(exercise=exercise, training_plan=plan, series=series, reps=reps, training_day=day)
+
+            return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
+        else:
+            return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
 
 
 class DeleteFromExercisePlan(View):

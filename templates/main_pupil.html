@@ -1,4 +1,5 @@
-<h1>Witaj {{ pupil.first_name }}</h1>
-<p><a href="/main/{{ pupil.id }}/">Dashboard</a></p>
-<p><a href="/logout/">Logout</a></p>
-
+{% extends 'layout.html' %}
+{% block content %}
+<h1 class="ml-3 mb-5 mt-5 text-primary" > Witaj {{ pupil.first_name }}</h1>
+    <div><a class="btn btn-primary ml-3" href="/main/{{ pupil.id }}/">Dashboard</a> <a class="btn btn-primary" href="/logout/">Logout</a> </div>
+{% endblock %}

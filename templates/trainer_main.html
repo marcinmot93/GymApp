@@ -1,21 +1,22 @@
-<h1>Hello {{ trainer.first_name }}</h1>
-<ul>Your Pupils:
-    {%  for pupil in pupils %}
-        {% for p in pupil.trainingplan_set.all %}
-            {% if p.status == 1 %}
-                <li> {{ pupil.first_name }} {{ pupil.last_name }} <a href="/details/trainer/{{ trainer.id }}/{{ pupil.id }}/">Details</a></li>
-            {% elif p.status == 2 %}
-                <li>{{ pupil.first_name }} {{ pupil.last_name }} <a href="/create_plan/{{ trainer.id }}/{{ pupil.id }}/">Create Plan</a></li>
-            {% endif %}
-            {% empty %}
-                <li>{{ pupil.first_name }} {{ pupil.last_name }} <a href="/create_plan/{{ trainer.id }}/{{ pupil.id }}/">Create Plan</a></li>
+{% extends 'layout.html' %}
+{% block content %}
+<h1 class="text-primary text-center mt-3 mb-3">Hello {{ trainer.first_name }}</h1>
+    <ul class="mb-4 mt-4"> <strong>Your Pupils: </strong>
+
+        {% for p in active %}
+            <li> {{ p.name}} <a href="/details/trainer/{{ trainer.id }}/{{ p.the_pupil.id }}/">Details</a></li>
         {% endfor %}
-    {% endfor %}
+        {% for p in to_do %}
+            <li>{{ p.the_pupil.name }} <a href="/create_plan/{{ trainer.id }}/{{ p.the_pupil.id }}/">Create Plan</a></li>
+        {% endfor %}
+        {% for p in empty %}
+            <li>{{ p.first_name }} {{ p.last_name }} <a href="/create_plan/{{ trainer.id }}/{{ p.id }}/">Create Plan</a></li>
+        {% endfor %}
+
 </ul>
 <p>
    <a href="/exercises/{{ trainer.id }}/">Your Exercises</a>
+    <a href="/static">Main</a> <a href="/logout/">Logout</a>
 </p>
 
-<p><a href="/">Main</a> <a href="/logout/">Logout</a></p>
-
-
+{% endblock %}
