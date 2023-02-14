@@ -1,9 +1,7 @@
-.blue_one {
-   color: royalblue;
+.red {
+    color: blue;
 }
-a {
-      text-decoration: none;
- }
-table {
-   margin: 0 auto;
+
+.blue {
+    width: 150px;
 }

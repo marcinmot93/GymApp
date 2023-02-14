@@ -1,5 +1,10 @@
-<h1> Complete the data </h1>
-<form method="post"> {% csrf_token %}
+{% extends 'layout.html' %}
+{% block content %}
+<div class="ml-3 mt-3 mb-3 text-primary"><h1> Complete the data </h1></div>
+<div>
+<form class="form-group ml-3 mr-3" method="post"> {% csrf_token %}
    {{ form.as_p }}
-    <p><input type="submit" value="Save"></p>
+    <input class="btn btn-primary" type="submit" value="Save">
 </form>
+</div>
+{% endblock %}

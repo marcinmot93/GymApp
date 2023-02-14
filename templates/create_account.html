@@ -1,9 +1,12 @@
-<form method="post">
-    {{ errors }}
-  {% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="Create">
+{% extends 'layout.html' %}
+{% block content %}
+<div class="ml-3 mr-3 mt-3 mb-3">
+    <form class="form-group" method="post">
+        {{ errors }}
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input class="btn btn-primary" type="submit" value="Create"> <a class="btn btn-primary ml-2" href="/">Back</a>
+    </form>
+</div>
 
-</form>
-
-<p><a href="/static">Back</a> </p>
+{% endblock %}

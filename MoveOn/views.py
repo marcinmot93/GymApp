@@ -362,13 +362,7 @@ class CreateExercisePlan(View):
             exercise = data.get('exercise')
             exercise = get_object_or_404(Exercise, id=exercise)
             series = data.get('series')
-            if not series:
-                messages.error(request, "Fields cannot be empty")
-                return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
             reps = data.get('reps')
-            if not reps:
-                messages.error(request, "Fields cannot be empty")
-                return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
             day = data.get('training_day')
             day = get_object_or_404(DayNumber, id=day)
 
@@ -496,4 +490,7 @@ class DeleteExercise(View):
         exercise.delete()
 
         return redirect(f'/exercises/{del_id}/')
+
+
+
 

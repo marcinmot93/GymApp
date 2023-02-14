@@ -29,13 +29,13 @@ WEEKS = (
 )
 
 class CreateUserForm(forms.Form):
-    login = forms.CharField(label='Login')
-    password = forms.CharField(widget=forms.PasswordInput, label='Password', validators=[MinLengthValidator(8)])
-    password2 = forms.CharField(widget=forms.PasswordInput, label='Repeat Password', validators=[MinLengthValidator(8)])
-    email = forms.EmailField(label='E-mail')
-    account_type = forms.ChoiceField(choices=TYPE)
-    first_name = forms.CharField(max_length=128, label='Name')
-    last_name = forms.CharField(max_length=128, label='Last Name')
+    login = forms.CharField(label='Login', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Password', validators=[MinLengthValidator(8)])
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Repeat Password', validators=[MinLengthValidator(8)])
+    email = forms.EmailField(label='E-mail', widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    account_type = forms.ChoiceField(choices=TYPE, widget=forms.Select(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(max_length=128, label='Name', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(max_length=128, label='Last Name', widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     def clean(self):
         cleaned_data = super().clean()
@@ -70,11 +70,11 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
 class PupilDetailsForm(forms.Form):
-    name = forms.CharField()
-    last_name = forms.CharField()
-    starting_weight = forms.IntegerField()
-    height = forms.IntegerField()
-    trainer = forms.ChoiceField()
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    starting_weight = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    height = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    trainer = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}))
 
 class CreateExercisePlanForm(forms.Form):
     exercise = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}))

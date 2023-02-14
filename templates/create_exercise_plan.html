@@ -3,7 +3,6 @@
 <h1 class="mb-3 ml-3 mt-3 mb-3"> Plan name: <span class="text-primary">{{ plan.name }}</span></h1>
 {% if plan.status == 1 %}
 <p class="mb-3 ml-3 mt-3 mb-3">Create or edit day plan</p>
-     {% include 'messages.html' %}
 <div class="form-group ml-3 mr-3 mt-3">
 <form  method="post">
     {% csrf_token %}

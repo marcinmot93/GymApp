@@ -156,13 +156,12 @@
 {% endif %}
 
 {% if left_days %}
-    <p class="ml-3"><strong> Days: </strong> {{ left_days }}</p>
+    <p class="ml-3"><strong> Days left: </strong> {{ left_days }}</p>
 {% endif %}
 {% if till_start %}
     <p class="ml-3"><strong> Days till start: </strong> {{ till_start }} </p>
 {% endif %}
 
-{% if user.is_authenticated %}
 <div> <a class="btn btn-primary ml-3 mb-3" href="/logout/">Logout</a> </div>
-{% endif %}
+
 {% endblock %}
