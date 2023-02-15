@@ -10,9 +10,9 @@ from MoveOn.forms import *
 from MoveOn.models import *
 
 class Index(View):
-
+    """Renders the appropriate main page based on the user's role."""
     def get(self, request):
-
+        """Renders the appropriate template depending on user type."""
         if not request.user.is_authenticated:
             return render(request, 'main.html')
 
@@ -27,9 +27,9 @@ class Index(View):
 
 
 class LoginView(View):
-
+    """Handles user login functionality."""
     def get(self, request):
-
+        """Renders the login page."""
         if request.user.is_authenticated:
             return redirect('/')
         form = LoginForm()
@@ -37,7 +37,7 @@ class LoginView(View):
         return render(request, 'login.html', {'form': form})
 
     def post(self, request):
-
+        """Logs in the user and redirects them to the appropriate page."""
         form = LoginForm(request.POST)
 
         if form.is_valid():
@@ -68,25 +68,25 @@ class LoginView(View):
 
 
 class LogoutView(View):
-
+    """Handles user logout functionality."""
     def get(self, request):
-
+        """Logs out the user and redirects them to the homepage."""
         logout(request)
 
         return redirect('/')
 
 
 class CreateUserView(View):
-
+    """View responsible for creating new user accounts."""
     def get(self, request):
-
+        """Handles GET requests to the view."""
         form = CreateUserForm()
 
         return render(request, 'create_account.html', {'form': form})
 
 
     def post(self, request):
-
+        """Handles POST requests to the view."""
         form = CreateUserForm(request.POST)
 
         if form.is_valid():
@@ -117,9 +117,9 @@ class CreateUserView(View):
 
 
 class PupilDetailsView(View):
-
+    """View responsible for showing and processing pupil details form."""
     def get(self, request, user_id):
-
+        """Handles GET requests to the view."""
         if not request.user.is_authenticated:
             return redirect('/')
         if hasattr(request.user, 'thepupil') or hasattr(request.user, 'trainer'):
@@ -141,7 +141,7 @@ class PupilDetailsView(View):
         return render(request, 'pupil_details.html', {'form': form})
 
     def post(self, request, user_id):
-
+        """Handles POST requests to the view."""
         form = PupilDetailsForm(request.POST)
         form.fields['trainer'].choices = [
             (trainer.id, f'{trainer.name}') for trainer in Trainer.objects.all()
@@ -166,9 +166,9 @@ class PupilDetailsView(View):
 
 
 class TrainerMainView(View):
-
+    """A view for displaying the main page for a trainer with their pupils and training plans."""
     def get(self, request, trainer_id):
-
+        """Handles GET requests. Renders the trainer main page with the trainer's pupils and training plans."""
         if request.user.is_authenticated:
             if hasattr(request.user, 'trainer') and request.user.trainer.id == trainer_id:
                 trainer = get_object_or_404(Trainer, id=request.user.trainer.id)
@@ -186,9 +186,9 @@ class TrainerMainView(View):
 
 
 class ThePupilMainView(View):
-
+    """A view for displaying the main page for a pupil with their current training plan."""
     def get(self, request, pupil_id):
-
+        """Handles GET requests. Renders the pupil main page with the current training plan."""
         if not request.user.is_authenticated:
             return redirect('/')
         if not hasattr(request.user, 'thepupil'):
@@ -253,9 +253,9 @@ class ThePupilMainView(View):
 
 
 class CreatePlanView(View):
-
+    """A view for creating a new training plan for a pupil."""
     def get(self, request, trainer_id, pupil_id):
-
+        """Handles GET requests. Renders the create plan page for the specified trainer and pupil."""
         if not request.user.is_authenticated:
             return redirect('/')
         if not hasattr(request.user, 'trainer'):
@@ -274,7 +274,7 @@ class CreatePlanView(View):
 
 
     def post(self, request, trainer_id, pupil_id ):
-
+        """Handles POST requests. Creates a new training plan for the specified pupil."""
         form = AddTrainingPlanForm(request.POST)
         trainer = get_object_or_404(Trainer, id=trainer_id)
         pupil = get_object_or_404(ThePupil, id=pupil_id)
@@ -306,9 +306,9 @@ class CreatePlanView(View):
 
 
 class CreateExercisePlan(View):
-
+    """A view for adding exercises to a training plan."""
     def get(self, request, trainer_id, pupil_id, plan_id):
-
+        """Handles GET requests. Renders the create exercise plan page for the specified plan."""
         if not request.user.is_authenticated:
             return redirect('/')
         if not hasattr(request.user, 'trainer'):
@@ -347,7 +347,7 @@ class CreateExercisePlan(View):
         return render(request, 'create_exercise_plan.html', context)
 
     def post(self, request, trainer_id, pupil_id, plan_id):
-
+        """Handles POST requests. Adds a new exercise to the specified training plan."""
         form = CreateExercisePlanForm(request.POST)
         trainer = get_object_or_404(Trainer, id=trainer_id)
         pupil = get_object_or_404(ThePupil, id=pupil_id)
@@ -374,9 +374,9 @@ class CreateExercisePlan(View):
 
 
 class DeleteFromExercisePlan(View):
-
+    """A view for deleting an exercise from a training plan."""
     def get(self, request, plan_exercise_id, pupil_id):
-
+        """Handles GET requests to the view."""
         if not request.user.is_authenticated:
             return redirect('/')
         if not hasattr(request.user, 'trainer'):
@@ -393,9 +393,9 @@ class DeleteFromExercisePlan(View):
 
 
 class ExercisesView(View):
-
+    """Displays exercises for a given trainer and allows adding new exercises."""
     def get(self, request, trainer_id):
-
+        """Handles GET requests to retrieve and display exercises for a trainer."""
         if not request.user.is_authenticated:
             return redirect('/')
         if not hasattr(request.user, 'trainer'):
@@ -409,7 +409,7 @@ class ExercisesView(View):
         return render(request, 'exercises.html', {'form': form, 'exercises': exercises, 'trainer': trainer})
 
     def post(self, request, trainer_id):
-
+        """Handles POST requests to add a new exercise for a trainer."""
         form = AddExerciseForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
@@ -428,9 +428,9 @@ class ExercisesView(View):
 
 
 class TrainerPupilView(View):
-
+    """Displays information about a trainer's pupil and their training plan."""
     def get(self, request, trainer_id, pupil_id):
-
+        """Handles GET requests to retrieve and display information about a pupil's training plan."""
         if not request.user.is_authenticated:
             return redirect('/')
         if not hasattr(request.user, 'trainer'):
@@ -482,15 +482,13 @@ class TrainerPupilView(View):
             return render(request, 'trainer_pupil_main.html', {'pupil': pupil})
 
 class DeleteExercise(View):
-
+    """Deletes a given exercise and redirects to the exercises page for the exercise's trainer."""
     def get(self, request, ex_id):
-
+        """Handles GET requests to delete a given exercise."""
         exercise = Exercise.objects.get(id=ex_id)
         del_id = exercise.trainer.id
         exercise.delete()
 
         return redirect(f'/exercises/{del_id}/')
-
-
 
 
