@@ -3,7 +3,6 @@
 
 <div class="ml-3 mb-3 mt-3">
 <h1 class="text-primary mb-3">Your Pupil: {{ pupil.first_name }} {{ pupil.last_name }}</h1>
-{% include 'messages.html' %}
 {% if training_plan %}
     <h2 class="mb-3">His actual plan: <span class="text-primary">{{ training_plan.name }} </span></h2>
     <p class="mb-5">From {{ training_plan.start_date }} for  {{ training_plan.week_training_days }} weeks</p>
