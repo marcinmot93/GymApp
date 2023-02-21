@@ -1,8 +1,5 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.core.validators import *
-from django.core.exceptions import ValidationError
-from MoveOn.models import *
 from .validators import *
 
 TYPE = (
@@ -28,14 +25,18 @@ WEEKS = (
     (6, '6'),
 )
 
+
 class CreateUserForm(forms.Form):
     login = forms.CharField(label='Login', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Password', validators=[MinLengthValidator(8)])
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Repeat Password', validators=[MinLengthValidator(8)])
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Password',
+                               validators=[MinLengthValidator(8)])
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Repeat Password',
+                                validators=[MinLengthValidator(8)])
     email = forms.EmailField(label='E-mail', widget=forms.EmailInput(attrs={'class': 'form-control'}))
     account_type = forms.ChoiceField(choices=TYPE, widget=forms.Select(attrs={'class': 'form-control'}))
     first_name = forms.CharField(max_length=128, label='Name', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(max_length=128, label='Last Name', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(max_length=128, label='Last Name',
+                                widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     def clean(self):
         cleaned_data = super().clean()
@@ -66,8 +67,9 @@ class AddTrainingPlanForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
+    username = forms.CharField(validators=[validate_login_exist])
     password = forms.CharField(widget=forms.PasswordInput)
+
 
 class PupilDetailsForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -76,9 +78,18 @@ class PupilDetailsForm(forms.Form):
     height = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     trainer = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}))
 
+
 class CreateExercisePlanForm(forms.Form):
     exercise = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}))
     series = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     reps = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     training_day = forms.ChoiceField(choices=DAYS, widget=forms.Select(attrs={'class': 'form-control'}))
+
+
+class ActualWeightForm(forms.Form):
+    actual_weight = forms.FloatField(
+        label='Update your weight:',
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter your weight here'})
+    )
+
 

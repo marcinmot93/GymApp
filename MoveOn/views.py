@@ -1,16 +1,14 @@
-from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib import messages
-from django.views.generic import FormView
-from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from MoveOn.forms import *
 from MoveOn.models import *
 
+
 class Index(View):
     """Renders the appropriate main page based on the user's role."""
+
     def get(self, request):
         """Renders the appropriate template depending on user type."""
         if not request.user.is_authenticated:
@@ -28,6 +26,7 @@ class Index(View):
 
 class LoginView(View):
     """Handles user login functionality."""
+
     def get(self, request):
         """Renders the login page."""
         if request.user.is_authenticated:
@@ -47,7 +46,7 @@ class LoginView(View):
             password = data.get('password')
 
             if not User.objects.filter(username=username):
-                messages.error(request, 'Username does not exist')
+                messages.error(request, 'User does not exist')
                 return redirect('/login/')
 
             user = authenticate(username=username, password=password)
@@ -65,10 +64,12 @@ class LoginView(View):
             else:
                 messages.error(request, 'Wrong password')
                 return redirect('/login/')
+        return render(request, 'login.html', {'form': form})
 
 
 class LogoutView(View):
     """Handles user logout functionality."""
+
     def get(self, request):
         """Logs out the user and redirects them to the homepage."""
         logout(request)
@@ -78,12 +79,12 @@ class LogoutView(View):
 
 class CreateUserView(View):
     """View responsible for creating new user accounts."""
+
     def get(self, request):
         """Handles GET requests to the view."""
         form = CreateUserForm()
 
         return render(request, 'create_account.html', {'form': form})
-
 
     def post(self, request):
         """Handles POST requests to the view."""
@@ -118,6 +119,7 @@ class CreateUserView(View):
 
 class PupilDetailsView(View):
     """View responsible for showing and processing pupil details form."""
+
     def get(self, request, user_id):
         """Handles GET requests to the view."""
         if not request.user.is_authenticated:
@@ -167,6 +169,7 @@ class PupilDetailsView(View):
 
 class TrainerMainView(View):
     """A view for displaying the main page for a trainer with their pupils and training plans."""
+
     def get(self, request, trainer_id):
         """Handles GET requests. Renders the trainer main page with the trainer's pupils and training plans."""
         if request.user.is_authenticated:
@@ -187,6 +190,7 @@ class TrainerMainView(View):
 
 class ThePupilMainView(View):
     """A view for displaying the main page for a pupil with their current training plan."""
+
     def get(self, request, pupil_id):
         """Handles GET requests. Renders the pupil main page with the current training plan."""
         if not request.user.is_authenticated:
@@ -205,8 +209,10 @@ class ThePupilMainView(View):
                     return redirect(f'/main/{pupil_id}/')
                 left_days = None
                 till_start = None
+                current_day = None
                 if datetime.datetime.now().date() >= training_plan.start_date:
                     left_days = training_plan.check_days_left
+                    current_day = training_plan.current_plan_day
                 else:
                     till_start = training_plan.till_start_days
                 days = training_plan.planexercises_set.all()
@@ -233,16 +239,26 @@ class ThePupilMainView(View):
                 ctx2 = {mapping2[day.training_day.id]: days.filter(training_day=day.training_day.id) for day in days}
 
                 context = {'pupil': pupil,
-                            'training_plan': training_plan,
-                            'days': days,
+                           'training_plan': training_plan,
+                           'days': days,
                            **ctx,
                            **ctx2,
-                            }
+                           }
 
                 if left_days:
                     context['left_days'] = left_days
+                    context['current_day'] = current_day
                 if till_start:
                     context['till_start'] = till_start
+                if not ActualWeight.objects.filter(the_pupil=pupil).first():
+                    actual_weight_start = pupil.starting_weight
+                    context['actual_weight_start'] = actual_weight_start
+                else:
+                    actual_weight = ActualWeight.objects.filter(the_pupil=pupil).latest('add_date')
+                    context['actual_weight'] = actual_weight
+
+                form = ActualWeightForm()
+                context['form'] = form
 
                 return render(request, 'pupil_main.html', context)
             else:
@@ -250,10 +266,27 @@ class ThePupilMainView(View):
         else:
             return render(request, 'pupil_main_without_plan.html', {'pupil': pupil})
 
+    def post(self, request, pupil_id):
+
+        form = ActualWeightForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            actual_weight = data.get('actual_weight')
+            pupil = get_object_or_404(ThePupil, id=pupil_id)
+            date = datetime.date.today()
+            if ActualWeight.objects.filter(the_pupil=pupil, add_date=date).exists():
+                obj = ActualWeight.objects.get(the_pupil=pupil, add_date=date)
+                obj.actual_weight = actual_weight
+                obj.save()
+            else:
+                ActualWeight.objects.create(the_pupil=pupil, actual_weight=actual_weight)
+
+            return redirect(f'/main/{pupil_id}')
 
 
 class CreatePlanView(View):
     """A view for creating a new training plan for a pupil."""
+
     def get(self, request, trainer_id, pupil_id):
         """Handles GET requests. Renders the create plan page for the specified trainer and pupil."""
         if not request.user.is_authenticated:
@@ -272,8 +305,7 @@ class CreatePlanView(View):
 
         return render(request, 'create_plan.html', {'trainer': trainer, 'pupil': pupil, 'form': form})
 
-
-    def post(self, request, trainer_id, pupil_id ):
+    def post(self, request, trainer_id, pupil_id):
         """Handles POST requests. Creates a new training plan for the specified pupil."""
         form = AddTrainingPlanForm(request.POST)
         trainer = get_object_or_404(Trainer, id=trainer_id)
@@ -307,6 +339,7 @@ class CreatePlanView(View):
 
 class CreateExercisePlan(View):
     """A view for adding exercises to a training plan."""
+
     def get(self, request, trainer_id, pupil_id, plan_id):
         """Handles GET requests. Renders the create exercise plan page for the specified plan."""
         if not request.user.is_authenticated:
@@ -366,7 +399,8 @@ class CreateExercisePlan(View):
             day = data.get('training_day')
             day = get_object_or_404(DayNumber, id=day)
 
-            PlanExercises.objects.create(exercise=exercise, training_plan=plan, series=series, reps=reps, training_day=day)
+            PlanExercises.objects.create(exercise=exercise, training_plan=plan, series=series, reps=reps,
+                                         training_day=day)
 
             return redirect(f'/exercise_plan/{trainer.id}/{pupil.id}/{plan.id}/')
         else:
@@ -375,6 +409,7 @@ class CreateExercisePlan(View):
 
 class DeleteFromExercisePlan(View):
     """A view for deleting an exercise from a training plan."""
+
     def get(self, request, plan_exercise_id, pupil_id):
         """Handles GET requests to the view."""
         if not request.user.is_authenticated:
@@ -394,6 +429,7 @@ class DeleteFromExercisePlan(View):
 
 class ExercisesView(View):
     """Displays exercises for a given trainer and allows adding new exercises."""
+
     def get(self, request, trainer_id):
         """Handles GET requests to retrieve and display exercises for a trainer."""
         if not request.user.is_authenticated:
@@ -429,6 +465,7 @@ class ExercisesView(View):
 
 class TrainerPupilView(View):
     """Displays information about a trainer's pupil and their training plan."""
+
     def get(self, request, trainer_id, pupil_id):
         """Handles GET requests to retrieve and display information about a pupil's training plan."""
         if not request.user.is_authenticated:
@@ -464,11 +501,11 @@ class TrainerPupilView(View):
                 ctx = {training_days[day.training_day.id]: day.training_day for day in days}
 
                 context = {'pupil': pupil,
-                            'training_plan': training_plan,
-                            'days': days,
-                            'trainer': trainer,
+                           'training_plan': training_plan,
+                           'days': days,
+                           'trainer': trainer,
                            **ctx,
-                            }
+                           }
 
                 if left_days:
                     context['left_days'] = left_days
@@ -481,8 +518,10 @@ class TrainerPupilView(View):
         else:
             return render(request, 'trainer_pupil_main.html', {'pupil': pupil})
 
+
 class DeleteExercise(View):
     """Deletes a given exercise and redirects to the exercises page for the exercise's trainer."""
+
     def get(self, request, ex_id):
         """Handles GET requests to delete a given exercise."""
         exercise = Exercise.objects.get(id=ex_id)
@@ -490,5 +529,3 @@ class DeleteExercise(View):
         exercise.delete()
 
         return redirect(f'/exercises/{del_id}/')
-
-

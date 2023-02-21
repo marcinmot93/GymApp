@@ -1,13 +1,8 @@
 import pytest
 from django.urls import reverse
-from django.test import Client
 from MoveOn.models import *
 from django.contrib.auth.models import User
 
-
-@pytest.fixture
-def client():
-    return Client()
 
 @pytest.mark.django_db
 def test_create_user_view(client):
@@ -16,48 +11,50 @@ def test_create_user_view(client):
 
     assert response.status_code == 200
 
+
 @pytest.mark.django_db
 def test_logout_view(client):
-    #log in
+    # log in
     client.login(username='username', password='password')
-    #logout view
+    # logout view
     response = client.get(reverse('logout'))
-    #correctly redirect
+    # correctly redirect
     assert response.status_code == 302
     assert response.url == '/'
-    #is user logged out
+    # is user logged out
     user = response.wsgi_request.user
-    assert user.is_authenticated == False
+    assert user.is_authenticated is False
 
 
 @pytest.mark.django_db
 def test_login_view(client):
-    #Create User
+    # Create User
     User.objects.create_user(
         username='test_user', password='test_password')
 
-    #Go to log in page
+    # Go to log in page
     url = reverse('login')
     response = client.get(url)
 
-    #Check if is loaded correctly
+    # Check if is loaded correctly
     assert response.status_code == 200
 
     # Send form
     response = client.post(url, {'username': 'test_user', 'password': 'test_password'})
 
-    #Check if is loaded correctly
+    # Check if is loaded correctly
     assert response.status_code == 302
     assert response.url == '/creating_details/1/'
     assert client.login(username='test_user', password='test_password')
 
-    #Form with wrong data
+    # Form with wrong data
     response = client.post(url, {'username': 'test_user', 'password': 'wrong_password'})
 
-    #Check if is not logged in
+    # Check if is not logged in
     assert response.status_code == 302
     assert response.url == '/login/'
     assert not client.login(username='test_user', password='wrong_password')
+
 
 @pytest.mark.django_db
 def test_create_user_view_with_valid_data(client):
@@ -93,7 +90,6 @@ def test_create_user_view_with_invalid_data(client):
 
     response = client.post(url, data, follow=True)
 
-
     assert response.status_code == 200
     assert response.redirect_chain == [(reverse('create_user'), 302)]
 
@@ -127,4 +123,3 @@ def test_pupil_details_view(client):
 
     assert response.status_code == 200
     assert response.redirect_chain == [(reverse('main_pupil', args=[1]), 302)]
-

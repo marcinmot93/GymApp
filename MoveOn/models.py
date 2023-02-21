@@ -27,14 +27,19 @@ STATUS = (
     (3, 'ended'),
 )
 
+
 class Trainer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
 
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
+
     @property
     def name(self):
         return "{} {}".format(self.first_name, self.last_name)
+
 
 class ThePupil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -54,6 +59,7 @@ class Exercise(models.Model):
     name = models.CharField(max_length=128)
     description = models.TextField(null=True)
     movie_link = models.CharField(max_length=256, null=True)
+
 
 class TrainingPlan(models.Model):
     name = models.CharField(max_length=128)
@@ -81,13 +87,19 @@ class TrainingPlan(models.Model):
 
     def till_start_days(self):
         now = datetime.datetime.now().date()
-        days_left = (self.start_date-now).days
+        days_left = (self.start_date - now).days
         return days_left
+
+    def current_plan_day(self):
+        now = datetime.datetime.now().date()
+        current_day = now - self.start_date
+        return current_day.days
 
 
 class DayNumber(models.Model):
     name = models.CharField(max_length=128)
     number = models.IntegerField(choices=DAYS)
+
 
 class PlanExercises(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
@@ -96,10 +108,32 @@ class PlanExercises(models.Model):
     reps = models.IntegerField()
     training_day = models.ForeignKey(DayNumber, on_delete=models.CASCADE)
 
+
 class ActualWeight(models.Model):
     actual_weight = models.FloatField()
-    add_date = models.DateField()
+    add_date = models.DateField(auto_now_add=True)
     the_pupil = models.ForeignKey(ThePupil, on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = ('add_date', 'the_pupil')
 
 
+
+class IsMatched(models.Model):
+    pupil = models.ForeignKey(ThePupil, on_delete=models.CASCADE, related_name='rating_one')
+    rated_pupil = models.ForeignKey(ThePupil, on_delete=models.CASCADE, related_name='rated_one')
+    decision = models.IntegerField(choices=(
+        (1, 'Yes'),
+        (2, 'No')
+    ))
+
+    class Meta:
+        unique_together = ('pupil', 'rated_pupil')
+
+
+class Post(models.Model):
+    pupil = models.ForeignKey(ThePupil, on_delete=models.CASCADE)
+    text = models.CharField(max_length=256, blank=True)
+    image = models.ImageField()
+    likes = models.IntegerField(default=0)
+    comment = models.CharField(max_length=128)
