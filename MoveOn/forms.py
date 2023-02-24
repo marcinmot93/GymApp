@@ -92,4 +92,12 @@ class ActualWeightForm(forms.Form):
         widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter your weight here'})
     )
 
+class AddResultForm(forms.Form):
+    which_series = forms.ChoiceField(
+        label='Choose Series',
+        label_suffix="",
+        widget=forms.Select(attrs={'class': "form-control"}))
+    reps = forms.IntegerField(label_suffix="", widget=forms.NumberInput(attrs={'class': "form-control"}))
+    weight = forms.FloatField(label_suffix="", widget=forms.NumberInput(attrs={'class': "form-control"}))
+    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
 

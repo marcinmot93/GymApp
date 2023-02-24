@@ -1,0 +1,209 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block content %}
+
+    <label class="ml-3"> Which day do you train today?
+        <select class="ml-3 mt-3 mb-3" id="id_day">
+            {% for day in all_days %}
+                <option value="{{ day.id }}">{{ day.name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    {% if first %}
+        <table class="table ml-3 text-center" id="first">
+            <thead class="thead-light">
+            <tr class="d-flex">
+                <th scope="col" class="col-3">{{ first.name }} Day</th>
+                <th scope="col" class="col-2">Series</th>
+                <th scope="col" class="col-1">Reps</th>
+                <th scope="col" class="col-1">Results</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in first1 %}
+                <tr class="d-flex">
+                    <td class="col-3 red_one"><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+                    <td class="col-2">{{ i.series }}</td>
+                    <td class="col-1">{{ i.reps }}</td>
+                    <td class="btn" style="float: right;"><a href="/results/{{ i.id }}/{{ i.exercise.id }}/">Add
+                        Results</a></td>
+                </tr>
+                </tbody>
+
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    {% if second %}
+        <table class="table ml-3 text-center" id="second" hidden>
+            <thead class="thead-light">
+            <tr class="d-flex">
+                <th scope="col" class="col-3">{{ second.name }} Day</th>
+                <th scope="col" class="col-2">Series</th>
+                <th scope="col" class="col-1">Reps</th>
+                <th scope="col" class="col-1">Results</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in second2 %}
+                <tr class="d-flex">
+                    <td class="col-3"><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+                    <td class="col-2">{{ i.series }}</td>
+                    <td class="col-1">{{ i.reps }}</td>
+                    <td class="btn" style="float: right;"><a href="/results/{{ i.id }}/{{ i.exercise.id }}/">Add
+                        Results</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if third %}
+        <table class="table ml-3 text-center" id="third" hidden>
+            <thead class="thead-light">
+            <tr class="d-flex">
+                <th scope="col" class="col-3">{{ third.name }} Day</th>
+                <th scope="col" class="col-2">Series</th>
+                <th scope="col" class="col-1">Reps</th>
+                <th scope="col" class="col-1">Results</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in third3 %}
+                <tr class="d-flex">
+                    <td class="col-3"><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+                    <td class="col-2">{{ i.series }}</td>
+                    <td class="col-1">{{ i.reps }}</td>
+                    <td class="btn" style="float: right;"><a href="/results/{{ i.id }}/{{ i.exercise.id }}/">Add
+                        Results</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if fourth %}
+        <table class="table ml-3 text-center" id="fourth" hidden>
+            <thead class="thead-light">
+            <tr class="d-flex">
+                <th scope="col" class="col-3">{{ fourth.name }} Day</th>
+                <th scope="col" class="col-2">Series</th>
+                <th scope="col" class="col-1">Reps</th>
+                <th scope="col" class="col-1">Results</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in fourth4 %}
+                <tr class="d-flex">
+                    <td class="col-3"><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+                    <td class="col-2">{{ i.series }}</td>
+                    <td class="col-1">{{ i.reps }}</td>
+                    <td class="btn" style="float: right;"><a href="/results/{{ i.id }}/{{ i.exercise.id }}/">Add
+                        Results</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if fifth %}
+        <table class="table ml-3 text-center" id="fifth" hidden>
+            <thead class="thead-light">
+            <tr class="d-flex">
+                <th scope="col" class="col-3">{{ fifth.name }} Day</th>
+                <th scope="col" class="col-2">Series</th>
+                <th scope="col" class="col-1">Reps</th>
+                <th scope="col" class="col-1">Results</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in fifth5 %}
+                <tr class="d-flex">
+                    <td class="col-3"><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+                    <td class="col-2">{{ i.series }}</td>
+                    <td class="col-1">{{ i.reps }}</td>
+                    <td class="btn" style="float: right;"><a href="/results/{{ i.id }}/{{ i.exercise.id }}/">Add
+                        Results</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if sixth %}
+        <table class="table ml-3 text-center" id="sixth" hidden>
+            <thead class="thead-light">
+            <tr class="d-flex">
+                <th scope="col" class="col-3">{{ sixth.name }} Day</th>
+                <th scope="col" class="col-2">Series</th>
+                <th scope="col" class="col-1">Reps</th>
+                <th scope="col" class="col-1">Results</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in sixth6 %}
+                <tr class="d-flex">
+                    <td class="col-3"><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+                    <td class="col-2">{{ i.series }}</td>
+                    <td class="col-1">{{ i.reps }}</td>
+                    <td class="btn" style="float: right;"><a href="/results/{{ i.id }}/{{ i.exercise.id }}/">Add
+                        Results</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if seventh %}
+        <table class="table ml-3 text-center" id="seventh" hidden>
+            <thead class="thead-light">
+            <tr class="d-flex">
+                <th scope="col" class="col-3">{{ seventh.name }} Day</th>
+                <th scope="col" class="col-2">Series</th>
+                <th scope="col" class="col-1">Reps</th>
+                <th scope="col" class="col-1">Results</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in seventh7 %}
+                <tr class="d-flex">
+                    <td class="col-3"><a href="{{ i.exercise.movie_link }}">{{ i.exercise.name }}</a></td>
+                    <td class="col-2">{{ i.series }}</td>
+                    <td class="col-1">{{ i.reps }}</td>
+                    <td class="btn" style="float: right;"><a href="/results/{{ i.id }}/{{ i.exercise.id }}/">Add
+                        Results</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+
+    <div class="ml-3"> Last time you trained on <strong>{{ last_date.date }} </strong>. Training day <strong>{{ last_date.exercise.training_day.name }}</strong> </div>
+    <table class="table text-center mt-3">
+        <thead class="thead-light">
+        <tr>
+            <th>Exercise name</th>
+            <th>Series</th>
+            <th>Reps</th>
+            <th>Weight</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for result in last_result %}
+                <tr>
+                <td>{{ result.exercise.exercise.name }}</td>
+                <td>{{ result.which_series }}</td>
+                <td>{{ result.reps }}</td>
+                <td>{{ result.result | floatformat:2 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/TrainingApp.js' %}"></script>
+{% endblock %}
