@@ -111,12 +111,24 @@ class PlanExercises(models.Model):
 
 class ActualWeight(models.Model):
     actual_weight = models.FloatField()
-    add_date = models.DateField(auto_now_add=True)
+    add_date = models.DateField(auto_now=True)
     the_pupil = models.ForeignKey(ThePupil, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('add_date', 'the_pupil')
 
+
+class MyAchievements(models.Model):
+    pupil = models.ForeignKey(ThePupil, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(PlanExercises, on_delete=models.CASCADE)
+    which_series = models.IntegerField()
+    reps = models.IntegerField()
+    result = models.FloatField()
+    date = models.DateField()
+    add_date = models.DateField(auto_now=True)
+
+    class Meta:
+        unique_together = ('which_series', 'exercise', 'date')
 
 
 class IsMatched(models.Model):

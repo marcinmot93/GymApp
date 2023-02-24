@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="text-primary text-center mt-3"><strong>{{ exercise.name }}</strong></div>
+    <form class="ml-3 mr-3 mt-3 text-center" method="post"> {% csrf_token %}
+        {{ form.as_p }}
+        <input class="btn btn-primary blue" type="submit" value="Add">
+    </form>
+
+    <table class="table text-center mt-3">
+        <thead class="thead-light">
+        <tr>
+            <th>Series</th>
+            <th>Reps</th>
+            <th>Weight</th>
+            <th class="text-danger">Expected Reps</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for i in result %}
+            <tr>
+                <td> {{ i.which_series }} </td>
+                <td> {{ i.reps }} </td>
+                <td> {{ i.result |floatformat:2 }} kg</td>
+                <td class="text-danger"> {{ i.exercise.reps }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="mt=3 ml-3">
+        <a class="btn btn-primary" href="/achievements/{{ plan.training_plan.the_pupil.id }}/{{ plan.training_plan.id }}/"> Back </a>
+    </div>
+
+{% endblock %}

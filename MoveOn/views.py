@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from MoveOn.forms import *
 from MoveOn.models import *
+import datetime
 
 
 class Index(View):
@@ -529,3 +530,96 @@ class DeleteExercise(View):
         exercise.delete()
 
         return redirect(f'/exercises/{del_id}/')
+
+
+class Achievements(View):
+    def get(self, request, pupil_id, plan_id):
+
+        if not request.user.is_authenticated:
+            return redirect('/')
+        if not hasattr(request.user, 'thepupil'):
+            return redirect('/')
+        if not request.user.thepupil.id == pupil_id:
+            return redirect('/')
+        all_days = DayNumber.objects.all()
+        plan = get_object_or_404(TrainingPlan, id=plan_id)
+        days = plan.planexercises_set.all().order_by('training_day_id')
+        mapping = {
+            1: 'first',
+            2: 'second',
+            3: 'third',
+            4: 'fourth',
+            5: 'fifth',
+            6: 'sixth',
+            7: 'seventh',
+        }
+        mapping2 = {
+            1: 'first1',
+            2: 'second2',
+            3: 'third3',
+            4: 'fourth4',
+            5: 'fifth5',
+            6: 'sixth6',
+            7: 'seventh7',
+        }
+        ctx = {mapping[day.training_day.id]: day.training_day for day in days}
+
+        ctx2 = {mapping2[day.training_day.id]: days.filter(training_day=day.training_day.id) for day in days}
+
+        context = {'all_days': all_days, 'days': days, **ctx, **ctx2}
+        last_date = MyAchievements.objects.latest('date')
+        context['last_date'] = last_date
+        latest_results = MyAchievements.objects.filter(date=last_date.date).order_by('exercise', 'which_series')
+        context['last_result'] = latest_results
+
+        return render(request, 'achievements.html', context)
+
+
+class MyResults(View):
+
+    def get(self, request, plan_id, exercise_id):
+        plan_exercise = get_object_or_404(PlanExercises, id=plan_id)
+        exercise = get_object_or_404(Exercise, id=exercise_id)
+        date = datetime.date.today()
+        initial_data = {'date': date}
+        form = AddResultForm(
+            initial=initial_data
+        )
+        form.fields['which_series'].choices = [(str(i), str(i)) for i in range(1, int(plan_exercise.series) + 1)]
+
+        ctx = {'form': form,
+               'plan': plan_exercise,
+               'exercise': exercise}
+
+        now = datetime.date.today()
+        result = MyAchievements.objects.filter(exercise=plan_exercise, date=now).order_by('which_series')
+        ctx['result'] = result
+        return render(request, 'my_results.html', ctx)
+
+    def post(self, request, plan_id, exercise_id):
+
+        plan_exercise = get_object_or_404(PlanExercises, id=plan_id)
+        form = AddResultForm(request.POST)
+        form.fields['which_series'].choices = [(str(i), str(i)) for i in range(1, int(plan_exercise.series) + 1)]
+
+        if form.is_valid():
+            data = form.cleaned_data
+            pupil = plan_exercise.training_plan.the_pupil
+            exercise = plan_exercise
+            which_series = data.get('which_series')
+            reps = data.get('reps')
+            result = data.get('weight')
+            date = data.get('date')
+            obj, created = MyAchievements.objects.update_or_create(
+                exercise=exercise, which_series=which_series, date=date,
+                defaults={'pupil': pupil, 'reps': reps, 'result': result}
+            )
+
+            if not created:
+                obj.reps = reps
+                obj.result = result
+                obj.save()
+
+            return redirect(f'/results/{plan_id}/{exercise_id}/')
+
+        return redirect(f'/results/{plan_id}/{exercise_id}/')
