@@ -5,7 +5,12 @@
         {{ form.as_p }}
         <input class="btn btn-primary blue" type="submit" value="Add">
     </form>
-
+    <div class="text-center text-danger mt-3 ">
+        <strong>
+            Expected series: {{ plan.series }} Expected reps per series: {{ plan.reps }}
+        </strong>
+    </div>
+    {% if result %}
     <table class="table text-center mt-3">
         <thead class="thead-light">
         <tr>
@@ -25,6 +30,9 @@
             </tr>
         {% endfor %}
     </table>
+    {% else %}
+    <div class="text-primary text-center mt-3 mb-3"><strong>Start your training and add your results here</strong> </div>
+    {% endif %}
 
     <div class="mt=3 ml-3">
         <a class="btn btn-primary" href="/achievements/{{ plan.training_plan.the_pupil.id }}/{{ plan.training_plan.id }}/"> Back </a>

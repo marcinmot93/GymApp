@@ -8,9 +8,6 @@
             {% if p.status == 1 %}
                 <li class="list-group-item"> {{ p.the_pupil.name}} <a href="/details/trainer/{{ trainer.id }}/{{ p.the_pupil.id }}/">Details</a></li>
             {% endif %}
-            {% if p.status == 2 %}
-                <li class="list-group-item">{{ p.name }} <a href="/create_plan/{{ trainer.id }}/{{ p.id }}/">Create Plan</a></li>
-            {% endif %}
             {% empty %}
                 <li class="list-group-item">{{ pupil.name }} <a href="/create_plan/{{ trainer.id }}/{{ pupil.id }}/">Create Plan</a></li>
         {% endfor %}

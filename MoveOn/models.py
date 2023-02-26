@@ -49,6 +49,9 @@ class ThePupil(models.Model):
     height = models.FloatField()
     trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
+
     @property
     def name(self):
         return "{} {}".format(self.first_name, self.last_name)
@@ -66,7 +69,7 @@ class TrainingPlan(models.Model):
     description = models.TextField(null=True)
     trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE)
     the_pupil = models.ForeignKey(ThePupil, on_delete=models.CASCADE)
-    status = models.IntegerField(default=2, choices=STATUS)
+    status = models.IntegerField(default=1, choices=STATUS)
     start_date = models.DateField()
     week_training_days = models.IntegerField(choices=WEEKS)
     exercises = models.ManyToManyField(Exercise, through="PlanExercises")
@@ -120,6 +123,7 @@ class ActualWeight(models.Model):
 
 class MyAchievements(models.Model):
     pupil = models.ForeignKey(ThePupil, on_delete=models.CASCADE)
+    training_plan = models.ForeignKey(TrainingPlan, on_delete=models.CASCADE)
     exercise = models.ForeignKey(PlanExercises, on_delete=models.CASCADE)
     which_series = models.IntegerField()
     reps = models.IntegerField()

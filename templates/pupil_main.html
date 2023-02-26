@@ -2,8 +2,10 @@
 {% block content %}
 <h1 class="text-center text-primary mt-3 mb-3">Hello {{ pupil.first_name }} {{ pupil.last_name }}</h1>
 <div>
-    <a class="btn btn-primary ml-3 mb-3" href="/achievements/{{ pupil.id }}/{{ training_plan.id }}/">Let's Train</a>
+    <a class="btn btn-primary ml-3 mb-3 blue" href="/achievements/{{ pupil.id }}/{{ training_plan.id }}/">Let's Train</a>
+    <a class="btn btn-primary ml-3 mb-3 blue" href="/all_results/{{ pupil.id }}/{{ training_plan.id }}/">Your Results</a>
 </div>
+
 <div class="ml-3 mb-3">
   <strong>Your actual plan:</strong> {{ training_plan.name }}<br>
   <strong>From:</strong> {{ training_plan.start_date }}<br>

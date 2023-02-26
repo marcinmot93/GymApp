@@ -355,7 +355,8 @@ class CreateExercisePlan(View):
         plan_days = plan.planexercises_set.all()
         form = CreateExercisePlanForm()
         form.fields['exercise'].choices = [
-            (ex.id, f'{ex.name}') for ex in trainer.exercise_set.all()
+            ('', 'Choose an exercise'),
+            *[(ex.id, f'{ex.name}') for ex in trainer.exercise_set.all()]
         ]
         training_days = {
             1: 'first',
@@ -542,6 +543,7 @@ class Achievements(View):
         if not request.user.thepupil.id == pupil_id:
             return redirect('/')
         all_days = DayNumber.objects.all()
+        pupil = get_object_or_404(ThePupil, id=pupil_id)
         plan = get_object_or_404(TrainingPlan, id=plan_id)
         days = plan.planexercises_set.all().order_by('training_day_id')
         mapping = {
@@ -566,11 +568,15 @@ class Achievements(View):
 
         ctx2 = {mapping2[day.training_day.id]: days.filter(training_day=day.training_day.id) for day in days}
 
-        context = {'all_days': all_days, 'days': days, **ctx, **ctx2}
-        last_date = MyAchievements.objects.latest('date')
-        context['last_date'] = last_date
-        latest_results = MyAchievements.objects.filter(date=last_date.date).order_by('exercise', 'which_series')
-        context['last_result'] = latest_results
+        context = {'all_days': all_days, 'days': days, 'pupil': pupil, **ctx, **ctx2}
+        if MyAchievements.objects.exists():
+            last_date = MyAchievements.objects.latest('date')
+            day_of_week = last_date.date.strftime("%A")
+            context['last_date'] = last_date
+            context['day_of_week'] = day_of_week
+            latest_results = MyAchievements.objects.filter(date=last_date.date).order_by('exercise', 'which_series')
+            context['last_result'] = latest_results
+            context['exercises'] = latest_results.distinct('exercise')
 
         return render(request, 'achievements.html', context)
 
@@ -579,6 +585,12 @@ class MyResults(View):
 
     def get(self, request, plan_id, exercise_id):
         plan_exercise = get_object_or_404(PlanExercises, id=plan_id)
+        if not request.user.is_authenticated:
+            return redirect('/')
+        if not hasattr(request.user, 'thepupil'):
+            return redirect('/')
+        if not request.user.thepupil.id == plan_exercise.training_plan.the_pupil.id:
+            return redirect('/')
         exercise = get_object_or_404(Exercise, id=exercise_id)
         date = datetime.date.today()
         initial_data = {'date': date}
@@ -599,6 +611,7 @@ class MyResults(View):
     def post(self, request, plan_id, exercise_id):
 
         plan_exercise = get_object_or_404(PlanExercises, id=plan_id)
+        training_plan = plan_exercise.training_plan
         form = AddResultForm(request.POST)
         form.fields['which_series'].choices = [(str(i), str(i)) for i in range(1, int(plan_exercise.series) + 1)]
 
@@ -612,7 +625,7 @@ class MyResults(View):
             date = data.get('date')
             obj, created = MyAchievements.objects.update_or_create(
                 exercise=exercise, which_series=which_series, date=date,
-                defaults={'pupil': pupil, 'reps': reps, 'result': result}
+                defaults={'pupil': pupil, 'reps': reps, 'result': result, 'training_plan': training_plan}
             )
 
             if not created:
@@ -623,3 +636,33 @@ class MyResults(View):
             return redirect(f'/results/{plan_id}/{exercise_id}/')
 
         return redirect(f'/results/{plan_id}/{exercise_id}/')
+
+
+class AllResults(View):
+
+    def get(self, request, pupil_id, plan_id):
+
+        if not request.user.is_authenticated:
+            return redirect('/')
+        if not hasattr(request.user, 'thepupil'):
+            return redirect('/')
+        if not request.user.thepupil.id == pupil_id:
+            return redirect('/')
+        training_plan = get_object_or_404(TrainingPlan, id=plan_id)
+        all_dates = training_plan.myachievements_set.all().distinct('date').values_list('date', flat=True)
+        formatted_dates = [d.strftime('%Y-%m-%d') for d in all_dates]
+        pupil = get_object_or_404(ThePupil, id=pupil_id)
+        selected_date = request.GET.get('selected_date')
+        context = {'training_plan': training_plan,
+                   'formatted_dates': formatted_dates,
+                   'pupil': pupil}
+        if selected_date:
+            all_results = training_plan.myachievements_set.filter(date=selected_date).order_by('date')
+            training_day = training_plan.myachievements_set.filter(date=selected_date).first()
+            exercises = training_plan.myachievements_set.filter(date=selected_date).distinct('exercise')
+            context['all_results'] = all_results
+            context['selected_date'] = selected_date
+            context['training_day'] = training_day
+            context['exercises'] = exercises
+        return render(request, 'all_results.html', context)
+

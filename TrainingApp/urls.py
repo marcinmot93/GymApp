@@ -34,6 +34,6 @@ urlpatterns = [
     path('exercise/<int:ex_id>/delete/', views.DeleteExercise.as_view()),
     path('achievements/<int:pupil_id>/<int:plan_id>/', views.Achievements.as_view()),
     path('results/<int:plan_id>/<int:exercise_id>/', views.MyResults.as_view()),
-
+    path('all_results/<int:pupil_id>/<int:plan_id>/', views.AllResults.as_view()),
 
 ]

@@ -1,6 +1,7 @@
 from django import forms
 from django.core.validators import *
 from .validators import *
+from django.utils import timezone
 
 TYPE = (
     (1, 'ThePupil'),
@@ -62,7 +63,8 @@ class AddExerciseForm(forms.Form):
 class AddTrainingPlanForm(forms.Form):
     name = forms.CharField(label='Plan name', widget=forms.TextInput(attrs={'class': 'form-control'}))
     description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}), required=False)
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control',
+                                                               'min': timezone.now().strftime('%Y-%m-%d')}))
     week_training_days = forms.ChoiceField(choices=WEEKS, widget=forms.Select(attrs={'class': 'form-control'}))
 
 
@@ -80,7 +82,7 @@ class PupilDetailsForm(forms.Form):
 
 
 class CreateExercisePlanForm(forms.Form):
-    exercise = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}))
+    exercise = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Choose'}))
     series = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     reps = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     training_day = forms.ChoiceField(choices=DAYS, widget=forms.Select(attrs={'class': 'form-control'}))
@@ -92,6 +94,7 @@ class ActualWeightForm(forms.Form):
         widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter your weight here'})
     )
 
+
 class AddResultForm(forms.Form):
     which_series = forms.ChoiceField(
         label='Choose Series',
@@ -100,4 +103,3 @@ class AddResultForm(forms.Form):
     reps = forms.IntegerField(label_suffix="", widget=forms.NumberInput(attrs={'class': "form-control"}))
     weight = forms.FloatField(label_suffix="", widget=forms.NumberInput(attrs={'class': "form-control"}))
     date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-
