@@ -18,7 +18,7 @@
             {% for exercise in exercises %}
                 <thead class="thead-light">
                 <tr>
-                    <th colspan="3">{{ exercise.exercise.exercise.name }}</th>
+                    <th colspan="3">{{ exercise.exercise__exercise__name}}</th>
                 </tr>
                 <tr>
                     <th>Series</th>
@@ -27,7 +27,7 @@
                 </tr>
                 </thead>
                 {% for result in all_results %}
-                    {% if result.exercise == exercise.exercise %}
+                    {% if result.exercise.id == exercise.exercise %}
                         <tbody>
 
                         <tr>
@@ -43,7 +43,7 @@
     {% endif %}
 
     <div class="ml-3 mt-3">
-    <a class="btn btn-primary" href="/main/{{ training_plan.the_pupil.id }}/">Back</a>
+        <a class="btn btn-primary" href="/main/{{ training_plan.the_pupil.id }}/">Back</a>
     </div>
 
 

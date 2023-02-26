@@ -658,8 +658,8 @@ class AllResults(View):
                    'pupil': pupil}
         if selected_date:
             all_results = training_plan.myachievements_set.filter(date=selected_date).order_by('date')
-            training_day = training_plan.myachievements_set.filter(date=selected_date).first()
-            exercises = training_plan.myachievements_set.filter(date=selected_date).distinct('exercise')
+            training_day = all_results.first()
+            exercises = all_results.values('exercise', 'exercise__exercise__name').distinct()
             context['all_results'] = all_results
             context['selected_date'] = selected_date
             context['training_day'] = training_day
